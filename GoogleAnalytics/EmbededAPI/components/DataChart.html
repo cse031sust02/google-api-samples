@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Embed API Demo : Component - DataChart</title>
+</head>
+<body>
+
+<section id="auth-button"></section>
+<section id="view-selector-container"></section>
+<section id="datachart-container"></section>
+
+<script>
+(function(w,d,s,g,js,fjs){
+  g=w.gapi||(w.gapi={});g.analytics={q:[],ready:function(cb){this.q.push(cb)}};
+  js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];
+  js.src='https://apis.google.com/js/platform.js';
+  fjs.parentNode.insertBefore(js,fjs);js.onload=function(){g.load('analytics')};
+}(window,document,'script'));
+</script>
+
+<script>
+gapi.analytics.ready(function() {
+
+  var CLIENT_ID = 'INSERT YOUR CLIENT ID HERE';
+
+  /**
+   * Authorize the user immediately if the user has already granted access.
+   * If no access has been created, render an authorize button inside the
+   * element with the ID "embed-api-auth-container".
+   */
+  gapi.analytics.auth.authorize({
+    container: 'auth-button',
+    clientid: CLIENT_ID,
+  });
+
+  /**
+   * Create a new ViewSelector instance to be rendered inside of an
+   * element with the id "view-selector-container".
+   */
+  var viewSelector = new gapi.analytics.ViewSelector({
+    container: 'view-selector-container'
+  });
+
+  /**
+   * Create the Data Chart.
+   */
+  var report = new gapi.analytics.googleCharts.DataChart({
+    reportType: 'ga',
+    query: {
+      'dimensions': 'ga:date',
+      'metrics': 'ga:sessions',
+      'start-date': '30daysAgo',
+      'end-date': 'yesterday',
+    },
+    chart: {
+      type: 'LINE',
+      container: 'datachart-container'
+    }
+  });
+
+  /**
+   * Waits to render the view selector until after authorization has happened
+   */
+  gapi.analytics.auth.on('success', function(response) {   
+    // Render the view selector to the page.
+    viewSelector.execute();
+  });
+
+  /**
+   * updates the Data Chart whenever a new view is selected from the view selector.
+   */
+  viewSelector.on('change', function(ids) {
+    var newIds = {
+      query: {
+        ids: ids
+      }
+    }
+    report.set(newIds).execute();
+  });
+ 
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Embed API Demo : Single View Session Timeline</title>
+</head>
+<body>
+
+<section id="auth-button"></section>
+<section id="timeline"></section>
+
+<script>
+(function(w,d,s,g,js,fjs){
+  g=w.gapi||(w.gapi={});g.analytics={q:[],ready:function(cb){this.q.push(cb)}};
+  js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];
+  js.src='https://apis.google.com/js/platform.js';
+  fjs.parentNode.insertBefore(js,fjs);js.onload=function(){g.load('analytics')};
+}(window,document,'script'));
+</script>
+
+<script>
+gapi.analytics.ready(function() {
+
+  var CLIENT_ID = 'INSERT YOUR CLIENT ID HERE';
+  var VIEW_ID = 'INSERT VIEW ID HERE'; //example : ga:xxxxxxxx
+
+  /**
+   * Authorize the user immediately if the user has already granted access.
+   * If no access has been created, render an authorize button inside the
+   * element with the ID "embed-api-auth-container".
+   */
+  gapi.analytics.auth.authorize({
+    container: 'auth-button',
+    clientid: CLIENT_ID,
+  });
+
+
+  /**
+   * Create the timeline chart.
+   */
+  var timeline = new gapi.analytics.googleCharts.DataChart({
+    reportType: 'ga',
+    query: {
+      'dimensions': 'ga:date',
+      'metrics': 'ga:sessions',
+      'start-date': '30daysAgo',
+      'end-date': 'yesterday',
+      'ids' : VIEW_ID
+    },
+    chart: {
+      type: 'LINE',
+      container: 'timeline'
+    }
+  });
+
+  /**
+   * Waits to render the timeline until after authorization has happened
+   */
+  gapi.analytics.auth.on('success', function(response) {   
+    // Render the timeline to the page.
+    timeline.execute();
+  });
+
+ 
+});
+</script>
+</body>
+</html>
