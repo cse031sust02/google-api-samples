@@ -1,0 +1,33 @@
+<script src="https://apis.google.com/js/api:client.js"></script>
+
+<script>
+
+var googleUser = {};
+
+var startApp = function() {
+  gapi.load('auth2', function(){
+    auth2 = gapi.auth2.init({
+      client_id: 'YOUR_CLIENT_ID'
+    });
+    auth2.attachClickHandler('customBtn', {}, onSuccesssDoThis, onErrorDoThis);
+  });
+};
+
+function onSuccesssDoThis(googleUser) {
+  var profile = googleUser.getBasicProfile();
+  console.log('ID: ' + profile.getId());
+  console.log('Name: ' + profile.getName());
+  console.log('Image URL: ' + profile.getImageUrl());
+  console.log('Email: ' + profile.getEmail());
+}
+
+function onErrorDoThis(error) {
+  console.log(error);
+}
+</script>
+
+<div id="gSignInWrapper">
+  <span class="label">Sign in with:</span>
+  <button id="customBtn">Google</button>
+</div>
+<script>startApp();</script>
